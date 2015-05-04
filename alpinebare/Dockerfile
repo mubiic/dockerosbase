@@ -23,5 +23,6 @@ RUN             addgroup -S sudoer && \
 
 # Define base volume as a common attach point.
 VOLUME          ["/var/www"]
+
 # Define default command as the entry point.
 CMD             ["/bin/sh"]

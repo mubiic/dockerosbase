@@ -2,6 +2,7 @@ FROM            ubuntu-debootstrap:14.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 
 
+ENV             DEBIAN_FRONTEND noninteractive
 # Add apt repository mirror list, sudoer conf and bash profile
 COPY            etc             /etc
 COPY            root            /root
@@ -10,8 +11,8 @@ COPY            usr             /usr
 # Set proper permission to add configuration files and helper scripts
 RUN             chmod 0644 /etc/apt/sources.list && chmod 0440 /etc/sudoers && \
                 mkdir -p /opt/bin /opt/sbin /opt/shbin && \
-                chmod -R 755 /opt/bin /opt/sbin /opt/shbin && \
-                chmod +x /usr/bin/apt-cleanup /usr/bin/apt-dpkg-wrapper /usr/bin/apt-install
+                chmod -R 0755 /opt/bin /opt/sbin /opt/shbin && \
+                chmod 0755 /usr/bin/apt-cleanup /usr/bin/apt-dpkg-wrapper /usr/bin/apt-install
 
 ENV             PATH            /opt/bin:/opt/sbin:/opt/shbin:$PATH
 
@@ -19,13 +20,14 @@ ENV             PATH            /opt/bin:/opt/sbin:/opt/shbin:$PATH
 # and interactive interfaces
 RUN             ls /usr/bin/apt* /usr/bin/dpkg* |                        \
                 while read line; do                                      \
-                    min=$line-min;                                       \
-                    printf '#!/bin/sh\n/usr/bin/apt-dpkg-wrapper '$line' $@\n' > $min; \
-                    chmod +x $min;                                       \
+                    pkmin=$line-min;                                     \
+                    printf '#!/bin/sh\n/usr/bin/apt-dpkg-wrapper '$line' $@\n' > $pkmin; \
+                    chmod 0755 $pkmin;                                   \
                 done
 
+
 # Temporarily disable dpkg fsync to make building faster
-RUN             if [ ! -e /etc/dpkg/dpkg.cfg.d/docker-apt-speedup ]; then         \
+RUN             if [ ! -e /etc/dpkg/dpkg.cfg.d/docker-apt-speedup ]; then           \
                     echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup; \
                 fi
 
@@ -49,8 +51,8 @@ RUN             dpkg-divert-min --local --rename --add /usr/bin/ischroot && \
                 ln -sf /bin/true /usr/bin/ischroot
 
 # Install HTTPS support for APT and install add-apt-repository
-RUN             apt-get-min update -yq && apt-install-min apt-transport-https ca-certificates \
-                software-properties-common && apt-cleanup-min
+RUN             apt-get-min update -yq && apt-install-min apt-transport-https \
+                ca-certificates && apt-cleanup-min
 
 # Create a devops user as sudoer and initialize its directories
 # Create a www daemon user as sudoer without shell access nor home dir
@@ -59,7 +61,11 @@ RUN             addgroup --system sudoer && \
                 --ingroup sudoer --disabled-password --no-create-home wwwd && \
                 mkdir -p /var/www && touch /var/www/.placeholder && chown -R wwwd:sudoer /var/www
 
+# Avoid https://github.com/docker/docker/issues/4032
+ENV             DEBIAN_FRONTEND newt
+
 # Define base volume as a common attach point.
-VOLUME          ["/var/www"]
+VOLUME          ["/opt/shbin","/var/www"]
+
 # Define default command as the entry point.
 CMD             ["/bin/bash"]

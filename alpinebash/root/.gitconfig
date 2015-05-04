@@ -88,6 +88,7 @@
     reurl = remote set-url
     reurlo = remote set-url origin
     reduce = !"git gc --aggressive --prune=now"
+    rv = remote -v
 
     # View the current working tree status using the short format
     s = status -s
@@ -101,8 +102,8 @@
     st = status
     subinit = submodule update --init --recursive
     subpull = submodule update --recursive
-    subpull = !"git submodule foreach git pull --tags origin master"
-    subrepo = !"sh -c 'filter-branch --prune-empty --subdirectory-filter $1 master' -"
+    suball = !"git submodule foreach git pull --tags origin master"
+    subdir = !"sh -c 'filter-branch --prune-empty --subdirectory-filter $1 master' -"
 
     # Show verbose output about tags, branches or remotes
     tags = tag -l
@@ -113,6 +114,7 @@
 
     unassume = update-index --no-assume-unchanged
     unassumeall = !"git assumed | xargs git update-index --no-assume-unchanged"
+    unstage = reset HEAD --
     unstash = stash pop --index
 
     # from https://git.wiki.kernel.org/index.php/Aliases

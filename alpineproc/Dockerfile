@@ -2,17 +2,18 @@ FROM            mubiic/alpinebash
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             KUBEID          **None**
-ENV             KUBELICENSE     **None**
+ENV             KUBECONF        **None**
+ENV             APPCONF         **None**
 
 # Update the locale and timezone according to the env variables set above
 ENV             LANG            $LOCALE
+ENV             LANGUAGE        $LOCALE
 ENV             LC_ALL          $LOCALE
 
 RUN             apk update && apk add --update tzdata && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
                 echo $TIMEZONE > /etc/timezone && date && \
-                apk del tzdata && rm -rf /tmp/* /var/cache/apk/*
+                apk del tzdata && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 # Add conf to fix permissions and
 COPY            etc             /etc

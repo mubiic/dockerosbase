@@ -2,8 +2,8 @@ FROM            mubiic/ubuntubash
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             KUBEID          **None**
-ENV             KUBELICENSE     **None**
+ENV             KUBECONF        **None**
+ENV             APPCONF         **None**
 
 # Update the timezone and locale according to the env variables set above
 RUN             echo $TIMEZONE > /etc/timezone && \
@@ -11,8 +11,9 @@ RUN             echo $TIMEZONE > /etc/timezone && \
                 dpkg-reconfigure -f noninteractive tzdata && \
                 locale-gen en_US.UTF-8 $LOCALE && update-locale LANG=$LOCALE LC_CTYPE=$LOCALE
 
-ENV             LANG        $LOCALE
-ENV             LC_ALL      $LOCALE
+ENV             LANG            $LOCALE
+ENV             LANGUAGE        $LOCALE
+ENV             LC_ALL          $LOCALE
 
 # Add s6suite overlay to provide init manager
 ADD             https://github.com/just-containers/s6-overlay/releases/download/v1.9.1.3/s6-overlay-amd64.tar.gz /tmp/s6-overlay.tar.gz
