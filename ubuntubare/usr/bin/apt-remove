@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec apt-get -y -q remove --purge $@

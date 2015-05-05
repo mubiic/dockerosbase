@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+if [ $# -lt 1 ]; then
+    vertag="14.04.2"
+else
+    vertag="$1"
+fi
+orgname="mubiic"
+echo "Diff the package list between ${orgname}/ubuntucore:${vertag} and ubuntu-debootstrap:${vertag} ... ..."
+docker run --rm -t "${orgname}/ubuntucore:${vertag}" bash -l -O expand_aliases -c "dpkg --get-selections | grep -v deinstall" > core${vertag}.list
+docker run --rm -t "ubuntu-debootstrap:${vertag}" bash -l -O expand_aliases -c "dpkg --get-selections | grep -v deinstall" > debo${vertag}.list
+echo "###Following packages are removed from ubuntu-debootstrap:${vertag} during making ${orgname}/ubuntucore:${vertag} ###" > diff${vertag}.list
+diff -cB core${vertag}.list debo${vertag}.list | grep "^+.*" >> diff${vertag}.list
+rm -f core${vertag}.list debo${vertag}.list
+[ -f "$(pwd)/diff${vertag}.list" ] && echo "diff${vertag}.list has been generated successfully!"

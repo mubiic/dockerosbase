@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+if [ $# -lt 1 ]; then
+    dnames="alpinebare alpinebash alpineproc ubuntubare ubuntubash ubuntuproc"
+else
+    dnames=$@
+fi
+orgname="mubiic"
+basedir=$(pwd)
+tagname=""
+if [ -f "$basedir/localbuild" ]; then
+    for dname in $dnames; do
+       [ -f "${basedir}/${dname}/prebuild" ] && ${basedir}/${dname}/prebuild && ${basedir}/${dname}/prebuild 15.04
+       [ -f "${basedir}/${dname}/Dockerfile" ] && tagname="$(cat ${basedir}/${dname}/Dockerfile | grep FROM | cut -d: -f2)"
+       if [ -n "$tagname" ]; then
+            echo "Prepare to build ${orgname}/${dname}:${tagname} ... ..."
+            [ -d "${basedir}/${dname}" ] && cd "${basedir}/${dname}" && docker build --force-rm -t "${orgname}/${dname}:${tagname}" .
+       else
+            echo "Prepare to build ${orgname}/${dname} ... ..."
+            [ -d "${basedir}/${dname}" ] && cd "${basedir}/${dname}" && docker build --force-rm -t "${orgname}/${dname}" .
+       fi
+    done
+    exit 0
+else
+    echo "Please run localbuild.sh in its holding directory."
+    exit 1
+fi

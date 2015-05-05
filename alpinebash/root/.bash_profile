@@ -1,15 +1,14 @@
-export TERM="${TERM:=xterm}"
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 [ -d "/opt/bin" ] && export PATH="/opt/bin:$PATH"
 [ -d "/opt/sbin" ] && export PATH="/opt/sbin:$PATH"
-[ -d "/opt/shbin" ] && export PATH="/opt/shbin:$PATH"
-## Prefer US English and use UTF-8
-#export LANG="en_US"
-#export LC_ALL="en_US.UTF-8"
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
+export TERM="${TERM:=xterm}"
+## Prefer US English and use UTF-8
+#export LANG="en_US"
+#export LC_ALL="en_US.UTF-8"
 # Don't check mail when opening terminal.
 unset MAILCHECK
 
