@@ -1,0 +1,28 @@
+# Build Layer 0 Meta Info
+
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.1.2
+PRETTY_NAME="Alpine Linux v3.1"
+HOME_URL="http://alpinelinux.org"
+BUG_REPORT_URL="http://bugs.alpinelinux.org"
+## BY docker run -it --rm alpine:3.1 cat /etc/os-release
+
+musl
+busybox
+alpine-baselayout
+openrc
+alpine-conf
+zlib
+libcrypto1.0
+libssl1.0
+apk-tools
+busybox-initscripts
+scanelf
+musl-utils
+libc-utils
+alpine-keys
+alpine-base
+## BY docker run -it --rm alpine:3.1 apk info
+
+Maintainer: library | gliderlabs<team@gliderlabs.com>

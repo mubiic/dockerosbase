@@ -9,18 +9,14 @@ ENV             APPCONF         **TBD**
 
 
 ENV             DEBIAN_FRONTEND noninteractive
-# Add gosu to replace sudo
-COPY            usr             /usr
-
 # Update the timezone and locale according to the env variables set above
 RUN             apt-get-min remove language-pack* && apt-get-min update && \
                 apt-install-min htop procps locales tzdata language-pack-${LANGPACK} \
-                language-pack-${LANGPACK}-base && \
-                echo $TIMEZONE > /etc/timezone && \
+                language-pack-${LANGPACK}-base && echo $TIMEZONE > /etc/timezone && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
                 dpkg-reconfigure -f noninteractive tzdata && date \
                 locale-gen en_US.UTF-8 $LOCALE && update-locale LANG=$LOCALE LC_CTYPE=$LOCALE && \
-                chmod 0755 /usr/bin/gosu && apt-get-min remove tzdata && apt-cleanup-min
+                apt-get-min remove tzdata && apt-get-min autoremove -yq && apt-cleanup-min
 
 ENV             LANG            $LOCALE
 ENV             LANGUAGE        $LOCALE

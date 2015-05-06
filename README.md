@@ -36,9 +36,9 @@ though there is [a hack for glibc](https://github.com/andyshinn/alpine-pkg-glibc
 ```
 
 ### Images Sizes:  
-alpine:3.1 ~ 5MB, alpinebare:3.1 ~ xMB, alpinebash:3.1 ~ xMB, alpineproc:3.1 ~ xMB  
-ubuntu-debootstrap:14.04.2 ~ 87MB, ubuntucore:14.04.2 ~ 56MB, ubuntubash:14.04.2 ~ xxMB  
-ubuntu-debootstrap:15.04 ~ 110MB, ubuntucore:15.04  ~ 95MB, ubuntubash:15.04  ~ xxMB  
+alpine:3.1 ~ 5MB, alpinebare:3.1 ~ 6MB, alpinebash:3.1 ~ 12MB, alpineproc:3.1 ~ xMB;  
+ubuntu-debootstrap:14.04.2 ~ 87MB, ubuntucore:14.04.2 ~ 56MB, ubuntubare:14.04.2 ~ 85MB;  
+ubuntu-debootstrap:15.04 ~ 110MB, ubuntucore:15.04  ~ 95MB, ubuntubare:15.04  ~ 100MB;  
 
 ### Script Usage:  
 Build one:  
@@ -58,6 +58,11 @@ Build ubuntucore:
 ### Image Usage:  
 Release Image Repo is located at:[mubiic/dockerosebase@github](https://github.com/mubiic/dockerosbase)  
 Public Images are avaliable at: [mubiic@dockerhub](https://registry.hub.docker.com/repos/mubiic/)  
+
+### Check image meta  
+docker run --rm -it mubiic/alpinebare  
+docker run --rm -it mubiic/alpineproc 'cat /etc/kube-imagemeta'  
+
 #### Add new/Del old packages  
 Alpine  
 ```
@@ -71,7 +76,7 @@ Ubuntu
 
 ```
 ### Mount Ad-hoc binaries
-TODO  
+docker run --rm -it mubiic/alpinebash -v $(pwd)/gosu_amd64:/opt/shbin/gosu ""
 
 ### References:  
 [Docker File Best Practices](http://docs.docker.com/articles/dockerfile_best-practices/)  

@@ -1,8 +1,8 @@
 FROM            mubiic/ubuntucore:15.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
+ENV             BUILDTAG        ubuntubare:15.04/r20150507/sg/A
 
 
-ENV             DEBIAN_FRONTEND noninteractive
 # Add apt repository mirror list, user local bin
 COPY            etc             /etc
 COPY            usr             /usr
@@ -44,12 +44,18 @@ RUN             dpkg-divert-min --local --rename --add /usr/bin/ischroot && \
                 ln -sf /bin/true /usr/bin/ischroot
 
 # Update existing system and install essential packages
-RUN             apt-get-min update && apt-get-min dist-upgrade -yq --no-install-recommends && \
-                apt-install-min adduser sudo passwd gnupg gpgv ubuntu-keyring inetutils-ping iproute2 && \
-                mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && apt-cleanup-min
+RUN             NewPackages="sudo procps lsof gawk unzip apt-utils gpgv ubuntu-keyring \
+                inetutils-ping iproute2" && DEBIAN_FRONTEND=noninteractive && \
+                apt-get-min update && apt-get-min dist-upgrade -yq --no-install-recommends && \
+                apt-install-min ${NewPackages} && \
+                mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && apt-cleanup-min && \
+                printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 1 Meta Info" \
+                "Package ++: ${NewPackages}" \
+                "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
-# Create a www data user without shell access nor home dir
-RUN             adduser --system --shell /bin/false --gecos 'WWW User in WWW-Data Group' \
+# Create sudoer groups: sudoer & admin [PASSWD] and creat a www user in www-data group
+RUN             addgroup admin && addgroup sudoer && \
+                adduser --system --shell /bin/false --gecos 'WWW User in WWW-Data Group' \
                 --ingroup www-data --disabled-password --no-create-home www && \
                 mkdir -p /var/www && touch /var/www/.placeholder && chown -R www:www-data /var/www && \
                 unset DEBIAN_FRONTEND && env --unset=DEBIAN_FRONTEND
@@ -62,5 +68,8 @@ WORKDIR         /root
 # Define base volume as a common attach point.
 VOLUME          ["/var/www"]
 
-# Define default command as the entry point.
-CMD             ["/bin/bash"]
+# Define the Entry Point and/or Default Command
+ENTRYPOINT      ["/bin/bash","-ilc"]
+CMD             ["cat /etc/kube-imagemeta"]
+## Notice: /bin/sh -c 'arg1 arg2 ... argn' has its own builtin args parser
+## CMD ["cat","/etc/kube-imagemeta"] will cause errors, always quote all args

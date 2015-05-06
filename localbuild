@@ -1,23 +1,44 @@
 #!/usr/bin/env bash
+# Exit on error
+set -e
 if [ $# -lt 1 ]; then
     dnames="alpinebare alpinebash alpineproc ubuntubare ubuntubash ubuntuproc"
+    echo "Checking head ... ..."
+    grep FROM $(pwd)/alpine*/Dockerfile*
+    grep FROM $(pwd)/ubuntu*/Dockerfile*
+    echo "... Pausing 5 seconds ..."
+    sleep 5
 else
     dnames=$@
 fi
 orgname="mubiic"
 basedir=$(pwd)
 tagname=""
+dockerfile="Dockerfile"
+
 if [ -f "$basedir/localbuild" ]; then
     for dname in $dnames; do
-       [ -f "${basedir}/${dname}/prebuild" ] && ${basedir}/${dname}/prebuild && ${basedir}/${dname}/prebuild 15.04
-       [ -f "${basedir}/${dname}/Dockerfile" ] && tagname="$(cat ${basedir}/${dname}/Dockerfile | grep FROM | cut -d: -f2)"
-       if [ -n "$tagname" ]; then
-            echo "Prepare to build ${orgname}/${dname}:${tagname} ... ..."
-            [ -d "${basedir}/${dname}" ] && cd "${basedir}/${dname}" && docker build --force-rm -t "${orgname}/${dname}:${tagname}" .
+       if [ -d "${basedir}/${dname}" ]; then
+            cd "${basedir}/${dname}"
+            ##[ -f "./prebuild" ] && ./prebuild && ./prebuild 15.04
+            echo "Please run prebuild manually and upload the ubuntucore to the hub."
+            if [ -f "./${dockerfile}" ]; then
+               tagname="$(cat ./${dockerfile} | grep FROM | cut -d: -f2)"
+               if [ -n "$tagname" ]; then
+                    echo "Prepare to build ${orgname}/${dname}:${tagname} ... ..."
+                    docker build --force-rm -t "${orgname}/${dname}:${tagname}" .
+                    docker tag -f "${orgname}/${dname}:${tagname}" "${orgname}/${dname}:latest"
+               else
+                    echo "Prepare to build ${orgname}/${dname} ... ..."
+                    docker build --force-rm -t "${orgname}/${dname}" .
+               fi
+            else
+                echo "Cannot find the dockerfile: ${basedir}/${dname}/${dockerfile}"
+            fi
        else
-            echo "Prepare to build ${orgname}/${dname} ... ..."
-            [ -d "${basedir}/${dname}" ] && cd "${basedir}/${dname}" && docker build --force-rm -t "${orgname}/${dname}" .
+        echo "Cannot find the directory: ${basedir}/${dname}"
        fi
+       cd "${basedir}"
     done
     exit 0
 else

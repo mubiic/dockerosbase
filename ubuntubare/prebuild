@@ -30,7 +30,7 @@ docker build --force-rm -t "${orgname}/ubuntucore:${vertag}" - <<EOF
 FROM prebuild/ubuntu-tmpbase-nocmd
 CMD ["/bin/bash"]
 EOF
-
+docker tag -f "${orgname}/ubuntucore:${vertag}" "${orgname}/ubuntucore:latest"
 docker rmi -f prebuild/ubuntu-tmpbase-nocmd
 rm -f "$TMP_FILE"
 echo "Image ${orgname}/ubuntucore:${vertag} has been built successfully. Please upload it before building ${orgname}/ubuntubare."
