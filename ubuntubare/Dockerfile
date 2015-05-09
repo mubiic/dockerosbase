@@ -4,11 +4,12 @@ ENV             BUILDTAG        ubuntubare:15.04/r20150507/sg/A
 
 
 # Add apt repository mirror list, user local bin
+COPY            entry           /entry
 COPY            etc             /etc
 COPY            usr             /usr
 
 # Set proper permission to configuration files and helper scripts
-RUN             chmod 0644 /etc/apt/sources.list && chmod 0755 /usr/bin/apt-install \
+RUN             chmod 0644 /etc/apt/sources.list && chmod 0777 /entry && chmod 0755 /usr/bin/apt-install \
                 /usr/bin/apt-cleanup /usr/bin/apt-dpkg-wrapper /usr/bin/apt-remove
 
 # Create *min files for apt* and dpkg* in order to avoid issues with locales
@@ -69,7 +70,9 @@ WORKDIR         /root
 VOLUME          ["/var/www"]
 
 # Define the Entry Point and/or Default Command
-ENTRYPOINT      ["/bin/bash","-ilc"]
-CMD             ["cat /etc/kube-imagemeta"]
-## Notice: /bin/sh -c 'arg1 arg2 ... argn' has its own builtin args parser
-## CMD ["cat","/etc/kube-imagemeta"] will cause errors, always quote all args
+ENTRYPOINT      ["/entry"]
+CMD             ["cat","/etc/kube-imagemeta"]
+## Notice: Use ["/entry"] as ENTRYPOINT instead of ["/bin/bash","-ilc"] to avoid arg parsing issue
+## /bin/bash -ilc "arg1 arg2 ... argn" has its own builtin args parser which demands full quoted args
+## CMD ["cat","/etc/kube-imagemeta"] will cause errors and "cat /etc/kube-imagemeta" will work
+## but it's incompatible with the default docker run convention. The /entry works on both styles.

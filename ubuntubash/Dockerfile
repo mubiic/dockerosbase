@@ -1,23 +1,33 @@
 FROM            mubiic/ubuntubare:15.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             BUILDTAG        ubuntubare:15.04/r20150507/sg/A
+ENV             TIMEZONE        Asia/Singapore
+ENV             LOCALE          en_US.UTF-8
+ENV             BUILDTAG        ubuntubash:15.04/r20150507/sg/A
 
 # Add bash profile for interactive terminal
+COPY            entry           /entry
 COPY            root            /root
 
 # Creat additonal binary path and set proper permissions
-RUN             mkdir -p /opt/bin /opt/sbin /opt/shbin && \
+RUN             chmod 0777 /entry && mkdir -p /opt/bin /opt/sbin /opt/shbin && \
                 chmod -R 0755 /opt/bin /opt/sbin /opt/shbin
 
 ENV             PATH            /opt/bin:/opt/sbin:/opt/shbin:$PATH
 
-# Update bash, coreutils and install Curl and add HTTPS support to APT
-RUN             NewPackages="xz-utils wget curl ca-certificates apt-transport-https \
-                gnupg-curl rsync" && DEBIAN_FRONTEND=noninteractive && \
-                apt-get-min update && apt-install-min ${NewPackages} && apt-cleanup-min && \
+ENV             LANG            $LOCALE
+ENV             LANGUAGE        $LOCALE
+ENV             LC_ALL          $LOCALE
+
+# Update timezone & locale, Install bash, rync and Curl and add HTTPS support to APT
+RUN             NewPackages="wget curl ca-certificates apt-transport-https gnupg-curl locales tzdata" && \
+                DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && \
+                cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo $TIMEZONE > /etc/timezone && \
+                dpkg-reconfigure -f noninteractive tzdata && date && \
+                locale-gen en_US.UTF-8 $LANG && update-locale LANG=$LANG LC_CTYPE=$LC_ALL && apt-cleanup-min && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 2 Meta Info" \
                 "Package ++: ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
+
 
 # Set Default User and Wordking Dir
 USER            root
@@ -28,5 +38,5 @@ WORKDIR         /root
 VOLUME          ["/opt/shbin"]
 
 # Define the Entry Point and/or Default Command
-ENTRYPOINT      ["/bin/bash","-ilc"]
-CMD             ["cat /etc/kube-imagemeta"]
+ENTRYPOINT      ["/entry"]
+CMD             ["cat","/etc/kube-imagemeta"]

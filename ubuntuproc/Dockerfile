@@ -1,22 +1,27 @@
 FROM            mubiic/ubuntubash:15.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             TIMEZONE        Asia/Singapore
-# LANGPACK is tricky, e.g. zh-hans vs zh-hant etc
+# LANG is tricky, e.g. zh-hans vs zh-hant, check language-pack-* before set
 ENV             LANGPACK        en
-ENV             LOCALE          en_US.UTF-8
+# LANG and LOCALE env produces the real locale setting: ${LANG}_${LOCALE}.UTF8
+ENV             LOCALE          SG
 ENV             KUBECONF        **TBD**
 ENV             APPCONF         **TBD**
+ENV             BUILDTAG        ubuntuproc:15.04/r20150507/sg/A
 
+
+ENV             LANG            ${LANGPACK}_${LOCALE}.UTF8
+ENV             LANGUAGE        ${LANGPACK}_${LOCALE}.UTF8
+ENV             LC_ALL          ${LANGPACK}_${LOCALE}.UTF8
 
 ENV             DEBIAN_FRONTEND noninteractive
 # Update the timezone and locale according to the env variables set above
-RUN             apt-get-min remove language-pack* && apt-get-min update && \
-                apt-install-min htop procps locales tzdata language-pack-${LANGPACK} \
-                language-pack-${LANGPACK}-base && echo $TIMEZONE > /etc/timezone && \
-                cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
-                dpkg-reconfigure -f noninteractive tzdata && date \
-                locale-gen en_US.UTF-8 $LOCALE && update-locale LANG=$LOCALE LC_CTYPE=$LOCALE && \
-                apt-get-min remove tzdata && apt-get-min autoremove -yq && apt-cleanup-min
+RUN             NewPackages="htop procps locales tzdata language-pack-${LANGPACK} language-pack-${LANGPACK}-base" && \
+                DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && \
+                 && apt-cleanup-min && \
+                locale-gen en_US.UTF-8 $LC_ALL && update-locale LANG=$LANG LC_CTYPE=$LC_ALL && \
+                printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 2 Meta Info" \
+                "Package ++: ${NewPackages}" \
+                "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
 ENV             LANG            $LOCALE
 ENV             LANGUAGE        $LOCALE

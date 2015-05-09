@@ -1,19 +1,20 @@
 FROM            alpine:3.1
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             BUILDTAG        alpinebare:3.1/r20150506/sg/A
+ENV             BUILDTAG        alpinebare:3.1u/r20150507/sg/A
 
 
 # Add apk repository mirror list and user local bin
+COPY            entry           /entry
 COPY            etc             /etc
 COPY            usr             /usr
 
 # Update bash and basic utils for future usages
-RUN             NewPackages="sudo lsof iputils" && \
+RUN             NewPackages="sudo lsof iputils alpine-keys" && chmod 0777 /entry && \
                 chmod 0644 /etc/apk/repositories && chmod 0755 /usr/bin/apk-cleanup && \
-                apk update && apk add --update ${NewPackages} && apk-cleanup && \
+                apk upgrade --update-cache --available && apk add --update ${NewPackages} && apk-cleanup && \
                 mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 1 Meta Info" \
-                "Package ++: ${NewPackages}" \
+                "Package ++: <Upgraded to use v3.2 apk repo> ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
 # Create sudoer groups: sudo[NOPASSWD] similar to existing group wheel[NOPASSWD], sudoer & admin[PASSWD]
@@ -31,7 +32,9 @@ WORKDIR         /root
 VOLUME          ["/var/www"]
 
 # Define the Entry Point and/or Default Command
-ENTRYPOINT      ["/bin/sh","-ilc"]
-CMD             ["cat /etc/kube-imagemeta"]
-## Notice: /bin/sh -c 'arg1 arg2 ... argn' has its own builtin args parser
-## CMD ["cat","/etc/kube-imagemeta"] will cause errors, always quote all args
+ENTRYPOINT      ["/entry"]
+CMD             ["cat","/etc/kube-imagemeta"]
+## Notice: Use ["/entry"] as ENTRYPOINT instead of ["/bin/sh","-ilc"] to avoid arg parsing issue
+## /bin/sh -ilc "arg1 arg2 ... argn" has its own builtin args parser which demands full quoted args
+## CMD ["cat","/etc/kube-imagemeta"] will cause errors and "cat /etc/kube-imagemeta" will work
+## but it's incompatible with the default docker run convention. The /entry works on both styles.
