@@ -8,7 +8,7 @@ Choose alpine over debian/ubuntu/centos for its tiny size.
 Choose alpine over busybox/tinycore/... for its apk system maturity.  
 Choose ubuntu-debootstrap over ubuntu for its cleanness and smaller footprint.  
 Choose ubuntu-debootstrap:15.04 over debian/ubuntu-debootstrap:14.04.2 for newer packages and less building from src[e.g. libsodium, libgit2 etc].  
-Choose rhel7/centos7 if you're really paranoid about the LTS thing, but come on, it's used as a container not a host, which means it's easy to restart it as soon as it goes mad.  
+Choose rhel7/oraclelinux if you're really paranoid about the LTS thing, but come on, it's used as a container not a host, which means it's easy to restart it as soon as it goes mad.  
 
 alpinebare: main data volume base image  
 alpinebash: main tooling/hub base image  
@@ -36,9 +36,9 @@ though there is [a hack for glibc](https://github.com/andyshinn/alpine-pkg-glibc
 ```
 
 #### Images Sizes:  
-alpine:3.1 ~ 5MB, alpinebare:3.1 ~ 11MB, alpinebash:3.1 ~ 17MB, alpineproc:3.1 ~ xMB;  
-ubuntu-debootstrap:14.04.2 ~ 87MB, ubuntucore:14.04.2 ~ 56MB, ubuntubare:14.04.2 ~ 85MB, ubuntubash:15.04  ~ 110MB;  
-ubuntu-debootstrap:15.04 ~ 110MB, ubuntucore:15.04  ~ 95MB, ubuntubare:15.04  ~ 100MB, ubuntubash:15.04  ~ 125MB;  
+alpine:3.1 ~ 5MB, alpinebare:3.1 ~ 11MB, alpinebash:3.1 ~ 17MB, alpineproc:3.1 ~ 25MB;  
+ubuntu-debootstrap:14.04.2 ~ 87MB, ubuntucore:14.04.2 ~ 56MB, ubuntubare:14.04.2 ~ 85MB, ubuntubash:14.04.2 ~ 110MB, ubuntuproc:14.04.2 ~ 115MB;  
+ubuntu-debootstrap:15.04 ~ 110MB, ubuntucore:15.04  ~ 95MB, ubuntubare:15.04  ~ 100MB, ubuntubash:15.04 ~ 125MB, ubuntuproc:15.04 ~ 130MB;  
 
 #### Script Usage:  
 Build one:  
@@ -55,11 +55,44 @@ Build ubuntucore:
 	./gendiff [15.04]  ##generate package difflist  
 ```  
 
-#### Image Usage:  
+#### Available Images:  
 Release Image Repo is located at:[mubiic/dockerosebase@github](https://github.com/mubiic/dockerosbase)  
 Public Images are avaliable at: [mubiic@dockerhub](https://registry.hub.docker.com/repos/mubiic/)  
 
-Please check Usage.md to see usage details.
+### mubiic/alpine*, ubuntu* images usage:
+#### Check image meta  
+docker run --rm -it mubiic/alpinebare  
+docker run --rm -it mubiic/alpineproc cat /etc/kube-imagemeta  
+
+#### Add new/Del old packages  
+Alpine  
+```
+	RUN apk update && apk add --update pkg1 pkg2 ... pkgn && \
+		apk del oldpkg && apk-cleanup
+```
+Ubuntu  
+```
+	RUN apt-get-min update && apt-install-min pkg1 pkg2 ... pkgn && \
+		apt-remove-min oldpkg && apt-cleanup-min
+
+```
+#### Mount Ad-hoc binaries
+docker run --rm -it mubiic/alpinebash -v $(pwd)/abspath:/opt/shbin/abspath abspath . 
+
+### Proc image s6 init manager usage  
+s6 init config dir by applying order[inside scripts applying order is according to naming sort,
+ so 00-servicename0, 01-servicename1, 0N-servicenameN are the proper script names]:  
+/etc/fix-attrs.d      holds scripts to ensure files owners and permissions are correct 	
+/etc/cont-init.d      holds one-time system scripts to execute container init before all  
+/etc/services.d       holds user services for long-lived daemon processes to be supervised:  
+**s6-setuidgid could be used to run daemon as another user in following scripts**
+/etc/services.d/*/run   		hold service daemons running management scripts
+/etc/services.d/*/finish 		hold service daemons exit clean up scripts
+/etc/services.d/*/log/run 		hold service daemons running logging scripts
+/etc/services.d/*/log/finish 	hold service daemons exit logging scripts
+/etc/cont-finish.d    holds one-time system scripts to clean up container env before exit  
+
+s6init working dir: /var/run/s6  
 
 #### References:  
 [Docker File Best Practices](http://docs.docker.com/articles/dockerfile_best-practices/)  
