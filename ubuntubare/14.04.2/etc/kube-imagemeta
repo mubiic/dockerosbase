@@ -1,0 +1,36 @@
+# Build Layer 0 Meta Info
+
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=15.04
+DISTRIB_CODENAME=vivid
+DISTRIB_DESCRIPTION="Ubuntu 15.04"
+## BY docker run --rm -it mubiic/ubuntucore:15.04 cat /etc/lsb-release
+
+apt
+base-files
+base-passwd
+bash
+bsdutils
+coreutils
+dash
+debianutils
+diffutils
+dpkg
+e2fsprogs
+findutils
+grep
+gzip
+hostname
+init
+libc-bin
+login
+mount
+ncurses-base
+ncurses-bin
+perl-base
+sed
+tar
+util-linux
+## BY docker run --rm -it mubiic/ubuntucore:15.04 dpkg --get-selections | grep -v deinstall | awk '{print $1}'
+
+Maintainer: Howard Mei <howardmei@mubiic.com>
