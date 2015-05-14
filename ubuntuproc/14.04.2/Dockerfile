@@ -2,7 +2,7 @@ FROM            mubiic/ubuntubash:14.04.2
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             KUBECONF        **TBD**
 ENV             APPCONF         **TBD**
-ENV             BUILDTAG        ubuntuproc:14.04.2/r20150507/sg/A
+ENV             BUILDTAG        ubuntuproc:14.04.2/r20150512/sg/A
 
 # Add conf to fix s6 init suite permissions
 COPY            etc             /etc

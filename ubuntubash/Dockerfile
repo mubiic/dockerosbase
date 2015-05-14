@@ -2,7 +2,7 @@ FROM            mubiic/ubuntubare:15.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             BUILDTAG        ubuntubash:15.04/r20150507/sg/A
+ENV             BUILDTAG        ubuntubash:15.04/r20150512/sg/A
 
 # Add bash profile for interactive terminal
 COPY            entry           /entry

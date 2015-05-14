@@ -1,3 +1,4 @@
 #!/bin/sh
 
-exec apt-get install --fix-missing --no-install-recommends --force-yes -y -q -o DPkg::Options::=--force-confold $@
+apt-get install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+--fix-missing --no-install-recommends --force-yes -y -q $@

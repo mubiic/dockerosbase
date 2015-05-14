@@ -1,6 +1,6 @@
 FROM            mubiic/ubuntucore:14.04.2
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             BUILDTAG        ubuntubare:14.04.2/r20150507/sg/A
+ENV             BUILDTAG        ubuntubare:14.04.2/r201505012/sg/A
 
 
 # Add apt repository mirror list, user local bin
@@ -8,11 +8,20 @@ COPY            entry           /entry
 COPY            etc             /etc
 COPY            usr             /usr
 
-# Set proper permission to configuration files and helper scripts
+# Set proper permission to configuration files and helper scripts and create *min files
+# for apt* and dpkg* in order to avoid issues with locales and interactive interfaces
+# Add support to debonly installation, all *.deb packages in /opt/debonly will be managed by
+# apt-debonly, apt-install and apt-remove, apt-cleanup
 RUN             chmod 0777 /entry && sed -i 's/vivid/trusty/g' /etc/apt/sources.list && \
                 sed -i 's/vivid/trusty/g;s/15.04/14.04.2/g' /etc/kube-imagemeta && \
-                chmod 0644 /etc/apt/sources.list && chmod 0755 /usr/bin/apt-install \
-                /usr/bin/apt-cleanup /usr/bin/apt-dpkg-wrapper /usr/bin/apt-remove
+                chmod 0755 /usr/bin/apt-install /usr/bin/apt-debonly /usr/bin/apt-remove \
+                /usr/bin/apt-dpkg-wrapper /usr/bin/apt-cleanup && \
+                ls /usr/bin/apt* /usr/bin/dpkg* |                        \
+                while read line; do                                      \
+                    pkmin=$line-min;                                     \
+                    printf '#!/bin/sh\n/usr/bin/apt-dpkg-wrapper '$line' $@\n' > $pkmin; \
+                    chmod 0755 $pkmin;                                   \
+                done
 
 # Create *min files for apt* and dpkg* in order to avoid issues with locales
 # and interactive interfaces
@@ -47,7 +56,7 @@ RUN             dpkg-divert-min --local --rename --add /usr/bin/ischroot && \
                 ln -sf /bin/true /usr/bin/ischroot
 
 # Update existing system and install essential packages
-RUN             NewPackages="sudo procps lsof gawk unzip apt-utils gpgv ubuntu-keyring \
+RUN             NewPackages="apt-utils gpgv sudo procps lsof gawk unzip ubuntu-keyring \
                 inetutils-ping iproute2" && DEBIAN_FRONTEND=noninteractive && \
                 apt-get-min update && apt-get-min dist-upgrade -yq --no-install-recommends && \
                 apt-install-min ${NewPackages} && \
