@@ -14,20 +14,19 @@ RUN             chmod 0777 /entry && mkdir -p /opt/bin /opt/sbin /opt/shbin && \
 
 ENV             PATH            /opt/bin:/opt/sbin:/opt/shbin:$PATH
 
-ENV             LANG            $LOCALE
-ENV             LANGUAGE        $LOCALE
-ENV             LC_ALL          $LOCALE
-
 # Update timezone & locale, Install bash, rync and Curl and add HTTPS support to APT
-RUN             NewPackages="wget curl ca-certificates apt-transport-https gnupg-curl locales tzdata" && \
+RUN             NewPackages="ca-certificates curl apt-transport-https gnutls-bin gnupg-curl locales tzdata" && \
                 DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo $TIMEZONE > /etc/timezone && \
                 dpkg-reconfigure -f noninteractive tzdata && date && \
-                locale-gen en_US.UTF-8 $LANG && update-locale LANG=$LANG LC_CTYPE=$LC_ALL && apt-cleanup-min && \
+                locale-gen en_US.UTF-8 $LOCALE && update-locale LANG=$LOCALE LC_CTYPE=$LOCALE && apt-cleanup-min && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 2 Meta Info" \
                 "Package ++: ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
+ENV             LANG            $LOCALE
+ENV             LANGUAGE        $LOCALE
+ENV             LC_ALL          $LOCALE
 
 # Set Default User and Wordking Dir
 USER            root

@@ -2,21 +2,22 @@ FROM            mubiic/ubuntubash:14.04.2
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             KUBECONF        **TBD**
 ENV             APPCONF         **TBD**
+ENV             S6VER           v1.A1.2
 ENV             BUILDTAG        ubuntuproc:14.04.2/r20150512/sg/A
 
 # Add conf to fix s6 init suite permissions
 COPY            etc             /etc
 
 # Update the timezone and locale according to the env variables set above
-RUN             NewPackages="htop procps psmisc" && DEBIAN_FRONTEND=noninteractive && \
+RUN             NewPackages="iptables procps psmisc" && DEBIAN_FRONTEND=noninteractive && \
                 apt-get-min update && apt-install-min ${NewPackages} && apt-cleanup-min && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 3 Meta Info" \
-                "Package ++: [s6 suite overlay], ${NewPackages}" \
+                "Package ++: [s6-overlay-${S6VER}] ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
 
 # Add s6suite overlay to provide init manager
-ADD             https://github.com/mubiic/s6-overlay/releases/download/v1.A1.1/s6-overlay-amd64.tar.gz /tmp/s6-overlay.tar.gz
+ADD             https://github.com/mubiic/s6-overlay/releases/download/${S6VER}/s6-overlay-amd64.tar.gz /tmp/s6-overlay.tar.gz
 RUN             tar xvfz /tmp/s6-overlay.tar.gz -C / && rm -f /tmp/s6-overlay.tar.gz
 
 

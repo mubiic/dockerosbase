@@ -2,7 +2,7 @@ FROM            mubiic/alpinebare:3.1
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             BUILDTAG        alpinebash:3.1/r20150507/sg/A
+ENV             BUILDTAG        alpinebash:3.1/r20150512/sg/A
 
 
 # Add bash environment files like bash_profile

@@ -2,10 +2,11 @@
 # Exit on error
 set -e
 if [ $# -lt 1 ]; then
-    dnames="alpinebare alpinebash alpineproc ubuntubare ubuntubash ubuntuproc"
-    echo "Checking head ... ..."
-    grep FROM $(pwd)/alpine*/Dockerfile*
-    grep FROM $(pwd)/ubuntu*/Dockerfile*
+    dnames="alpinebare alpinebash alpineproc ubuntubare/14.04.2 ubuntubare ubuntubash/14.04.2 ubuntubash ubuntuproc/14.04.2 ubuntuproc"
+    echo "Checking Dockerfile heads ... ..."
+    for dname in $dnames; do
+        grep FROM $dname/Dockerfile
+    done
     echo "... Pausing 5 seconds ..."
     sleep 5
 else
@@ -14,6 +15,7 @@ fi
 orgname="mubiic"
 basedir=$(pwd)
 tagname=""
+latestlist="3.1 15.04"
 dockerfile="Dockerfile"
 
 if [ -f "$basedir/localbuild" ]; then
@@ -22,15 +24,22 @@ if [ -f "$basedir/localbuild" ]; then
             cd "${basedir}/${dname}"
             ##[ -f "./prebuild" ] && ./prebuild && ./prebuild 15.04
             echo "Please run prebuild manually and upload the ubuntucore to the hub."
+            echo
             if [ -f "./${dockerfile}" ]; then
+               dname="$(echo $dname | cut -d/ -f1)"
                tagname="$(cat ./${dockerfile} | grep FROM | cut -d: -f2)"
                if [ -n "$tagname" ]; then
-                    echo "Prepare to build ${orgname}/${dname}:${tagname} ... ..."
+                    echo " ... ...... ... Start building ${orgname}/${dname}:${tagname} ... ...... ... " >&2
                     docker build --force-rm -t "${orgname}/${dname}:${tagname}" .
-                    docker tag -f "${orgname}/${dname}:${tagname}" "${orgname}/${dname}:latest"
+                    if [ -n "$(echo $latestlist | grep $tagname)" ]; then
+                        echo " ... ...... ... Tagging ${orgname}/${dname}:${tagname} as latest ... ...... ... " >&2
+                        docker tag -f "${orgname}/${dname}:${tagname}" "${orgname}/${dname}:latest"
+                    fi
+                    echo " ... ...... ... Finish building ${orgname}/${dname}:${tagname} ... ...... ... " >&2
                else
-                    echo "Prepare to build ${orgname}/${dname} ... ..."
+                    echo "... ... ... ... Start building ${orgname}/${dname} ... ...... ... " >&2
                     docker build --force-rm -t "${orgname}/${dname}" .
+                    echo "... ... ... ... Finish building ${orgname}/${dname} ... ... ... ... " >&2
                fi
             else
                 echo "Cannot find the dockerfile: ${basedir}/${dname}/${dockerfile}"

@@ -2,20 +2,21 @@ FROM            mubiic/alpinebash:3.1
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             KUBECONF        **TBD**
 ENV             APPCONF         **TBD**
-ENV             BUILDTAG        alpineproc:3.1/r20150507/sg/A
+ENV             S6VER           v1.A1.2
+ENV             BUILDTAG        alpineproc:3.1/r20150512/sg/A
 
 # Add conf to fix s6 init suite permissions
 COPY            etc             /etc
 
 # Remove sudo package in proc image, use /usr/bin/gosu instead for better security
-RUN             NewPackages="procps psmisc@testing" && \
+RUN             NewPackages="iptables bind-tools procps psmisc@testing" && \
                 apk update && apk add --update ${NewPackages} && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 3 Meta Info" \
-                "Package ++: [s6 suite overlay], ${NewPackages}" \
+                "Package ++: [s6-overlay-${S6VER}] ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
 # Add s6 suite overlay to provide init manager
-ADD             https://github.com/mubiic/s6-overlay/releases/download/v1.A1.1/s6-overlay-amd64.tar.gz /tmp/s6-overlay.tar.gz
+ADD             https://github.com/mubiic/s6-overlay/releases/download/${S6VER}/s6-overlay-amd64.tar.gz /tmp/s6-overlay.tar.gz
 RUN             tar xvfz /tmp/s6-overlay.tar.gz -C / && rm -f /tmp/s6-overlay.tar.gz
 
 # Create a devops user in sudo group and initialize its home directory

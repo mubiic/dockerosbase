@@ -1,6 +1,6 @@
 FROM            alpine:3.1
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             BUILDTAG        alpinebare:3.1u/r20150507/sg/A
+ENV             BUILDTAG        alpinebare:3.1u/r20150512/sg/A
 
 
 # Add apk repository mirror list and user local bin
