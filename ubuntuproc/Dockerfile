@@ -3,13 +3,13 @@ MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             KUBECONF        **TBD**
 ENV             APPCONF         **TBD**
 ENV             S6VER           v1.A1.2
-ENV             BUILDTAG        ubuntuproc:15.04/r20150512/sg/A
+ENV             BUILDTAG        ubuntuproc:15.04/r20150518/sg/A
 
 # Add conf to fix s6 init suite permissions
 COPY            etc             /etc
 
 # Update the timezone and locale according to the env variables set above
-RUN             NewPackages="iptables procps psmisc" && DEBIAN_FRONTEND=noninteractive && \
+RUN             NewPackages="libapparmor1 libcgroup1 cgroupfs-mount e2fsprogs procps psmisc gettext-base" && DEBIAN_FRONTEND=noninteractive && \
                 apt-get-min update && apt-install-min ${NewPackages} && apt-cleanup-min && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 3 Meta Info" \
                 "Package ++: [s6-overlay-${S6VER}] ${NewPackages}" \

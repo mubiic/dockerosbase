@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
 if [ $# -lt 1 ]; then
-    vertag="14.04.2"
+    vertag="14.04"
 else
     vertag="$1"
 fi
 ## 15.04 provides newer packages[95MB]. You may choose 14.04 to prebuild an even smaller core image [56MB].
 orgname="mubiic"
-echo "Prebuild ${orgname}/ubuntucore:${vertag} as minimal base image ... ..."
+echo " ... ...... ... Prebuild ${orgname}/ubuntucore:${vertag} as minimal base image ... ...... ... "
 docker rm -f ubuntu-tmpbase 2>/dev/null
 docker rmi -f prebuild/ubuntu-tmpbase 2>/dev/null
 echo "Produce the intermediate temp image prebuild/ubuntu-tmpbase:${vertag} ... ..."
 docker build --force-rm -t prebuild/ubuntu-tmpbase - <<EOF
 FROM ubuntu-debootstrap:${vertag}
-RUN dpkg --clear-selections && echo apt install |dpkg --set-selections && \
-    SUDO_FORCE_REMOVE=yes DEBIAN_FRONTEND=noninteractive apt-get --purge -y dselect-upgrade && \
+RUN dpkg --clear-selections && echo apt install |dpkg --set-selections && echo tar install |dpkg --set-selections && \
+    echo gzip install |dpkg --set-selections && echo gpgv install |dpkg --set-selections && echo bash install |dpkg --set-selections && \
+    echo adduser install |dpkg --set-selections && echo netbase install |dpkg --set-selections && echo makedev install |dpkg --set-selections && \
+    dpkg --get-selections | grep -v deinstall && SUDO_FORCE_REMOVE=yes DEBIAN_FRONTEND=noninteractive apt-get --purge -y dselect-upgrade && \
     dpkg-query -Wf '${db:Status-Abbrev}\t${binary:Package}\n' |grep '^.i' |awk -F'\t' '{print $2 " install"}' |dpkg --set-selections && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /usr/share/info/* /usr/share/lintian/*
 EOF
@@ -34,4 +36,4 @@ docker tag -f "${orgname}/ubuntucore:${vertag}" "${orgname}/ubuntucore:latest"
 docker rmi -f prebuild/ubuntu-tmpbase-nocmd
 rm -f "$TMP_FILE"
 echo "Image ${orgname}/ubuntucore:${vertag} has been built successfully. Please upload it before building ${orgname}/ubuntubare."
-echo "Please manually run: docker push ${orgname}/ubuntucore:${vertag}"
+echo " ... ...... ... Please manually run: docker push ${orgname}/ubuntucore:${vertag} ... ...... ... "

@@ -1,6 +1,6 @@
 FROM            mubiic/ubuntucore:15.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             BUILDTAG        ubuntubare:15.04/r20150512/sg/A
+ENV             BUILDTAG        ubuntubare:15.04/r20150518/sg/A
 
 
 # Add apt repository mirror list, user local bin
@@ -44,16 +44,15 @@ RUN             dpkg-divert-min --local --rename --add /usr/bin/ischroot && \
                 ln -sf /bin/true /usr/bin/ischroot
 
 # Update existing system and install essential packages
-RUN             NewPackages="apt-utils gpgv sudo procps lsof gawk xz-utils unzip ubuntu-keyring \
-                inetutils-ping iproute2" && DEBIAN_FRONTEND=noninteractive && apt-get-min update && \
-                apt-install-min ${NewPackages} && \
-                mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && apt-cleanup-min && \
+RUN             NewPackages="tar gzip apt-utils sudo lsof zlib1g-dev ubuntu-keyring inetutils-ping iproute2" && \
+                DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && apt-cleanup-min && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 1 Meta Info" \
                 "Package ++: ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
 # Create sudoer groups: sudoer & admin [PASSWD] and creat a www user in www-data group
-RUN             addgroup admin && addgroup sudoer && \
+RUN             mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && \
+                addgroup admin && addgroup sudoer && \
                 adduser --system --shell /bin/false --gecos 'WWW User in WWW-Data Group' \
                 --ingroup www-data --disabled-password --no-create-home www && \
                 mkdir -p /var/www && touch /var/www/.placeholder && chown -R www:www-data /var/www && \

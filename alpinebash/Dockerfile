@@ -1,8 +1,8 @@
-FROM            mubiic/alpinebare:3.1
+FROM            mubiic/alpinebare:edge
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             BUILDTAG        alpinebash:3.1/r20150512/sg/A
+ENV             BUILDTAG        alpinebash:3.2a/r20150518/sg/A
 
 
 # Add bash environment files like bash_profile
@@ -14,11 +14,11 @@ ENV             LANGUAGE        $LOCALE
 ENV             LC_ALL          $LOCALE
 
 # Update/install bash, sed, curl etc and maybe more [coreutils, findutils to replace builtin busybox-*]
-RUN             NewPackages="bash sed gawk tar gzip unzip openssl curl ca-certificates tzdata" && \
-                apk update && apk add --update ${NewPackages} && apk-cleanup && chmod 0777 /entry && \
+RUN             NewPackages="bash popt util-linux sed gawk unzip xz openssl curl ca-certificates tzdata" && \
+                apk add --update ${NewPackages} && apk-cleanup && chmod 0777 /entry && \
                 mkdir -p /opt/bin /opt/sbin /opt/shbin && chmod -R 755 /opt/bin /opt/sbin /opt/shbin && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
-                echo $TIMEZONE > /etc/timezone && date && apk del tzdata && apk-cleanup && \
+                echo $TIMEZONE > /etc/timezone && date && apk-cleanup && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 2 Meta Info" \
                 "Package ++: ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta

@@ -2,7 +2,7 @@ FROM            mubiic/ubuntubare:15.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             BUILDTAG        ubuntubash:15.04/r20150512/sg/A
+ENV             BUILDTAG        ubuntubash:15.04/r20150518/sg/A
 
 # Add bash profile for interactive terminal
 COPY            entry           /entry
@@ -15,7 +15,7 @@ RUN             chmod 0777 /entry && mkdir -p /opt/bin /opt/sbin /opt/shbin && \
 ENV             PATH            /opt/bin:/opt/sbin:/opt/shbin:$PATH
 
 # Update timezone & locale, Install bash, rync and Curl and add HTTPS support to APT
-RUN             NewPackages="ca-certificates curl apt-transport-https gnutls-bin gnupg-curl locales tzdata" && \
+RUN             NewPackages="sed gawk unzip ca-certificates curl apt-transport-https gnupg-curl locales tzdata xz-utils" && \
                 DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo $TIMEZONE > /etc/timezone && \
                 dpkg-reconfigure -f noninteractive tzdata && date && \

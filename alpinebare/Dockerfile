@@ -1,6 +1,6 @@
-FROM            alpine:3.1
+FROM            alpine:edge
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             BUILDTAG        alpinebare:3.1u/r20150512/sg/A
+ENV             BUILDTAG        alpinebare:3.2a/r20150518/sg/A
 
 
 # Add apk repository mirror list and user local bin
@@ -9,7 +9,7 @@ COPY            etc             /etc
 COPY            usr             /usr
 
 # Update bash and basic utils for future usages
-RUN             NewPackages="sudo lsof iputils alpine-keys" && chmod 0777 /entry && \
+RUN             NewPackages="sudo lsof iputils iproute2 tar gzip zlib" && chmod 0777 /entry && \
                 chmod 0644 /etc/apk/repositories && chmod 0755 /usr/bin/apk-cleanup && \
                 apk upgrade --update-cache --available && apk add --update ${NewPackages} && apk-cleanup && \
                 mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && \

@@ -2,14 +2,15 @@
 
 NAME="Alpine Linux"
 ID=alpine
-VERSION_ID=3.1.2
-PRETTY_NAME="Alpine Linux v3.1"
+VERSION_ID=3.2.0_alpha1
+PRETTY_NAME="Alpine Linux v3.2"
 HOME_URL="http://alpinelinux.org"
 BUG_REPORT_URL="http://bugs.alpinelinux.org"
-## BY docker run -it --rm alpine:3.1 cat /etc/os-release
+## BY docker run -it --rm alpine:edge cat /etc/os-release
 
 musl
 busybox
+libgcc
 alpine-baselayout
 openrc
 alpine-conf
@@ -23,6 +24,6 @@ musl-utils
 libc-utils
 alpine-keys
 alpine-base
-## BY docker run -it --rm alpine:3.1 apk info
+## BY docker run -it --rm alpine:edge apk info
 
 Maintainer: library | gliderlabs<team@gliderlabs.com>
