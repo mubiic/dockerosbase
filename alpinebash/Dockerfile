@@ -14,7 +14,7 @@ ENV             LANGUAGE        $LOCALE
 ENV             LC_ALL          $LOCALE
 
 # Update/install bash, sed, curl etc and maybe more [coreutils, findutils to replace builtin busybox-*]
-RUN             NewPackages="bash popt util-linux sed gawk unzip xz openssl curl ca-certificates tzdata" && \
+RUN             NewPackages="bash gawk xz curl ca-certificates tzdata e2fsprogs" && \
                 apk add --update ${NewPackages} && apk-cleanup && chmod 0777 /entry && \
                 mkdir -p /opt/bin /opt/sbin /opt/shbin && chmod -R 755 /opt/bin /opt/sbin /opt/shbin && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \

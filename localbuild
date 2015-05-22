@@ -2,7 +2,7 @@
 # Exit on error
 set -e
 if [ $# -lt 1 ]; then
-    dnames="alpinebare alpinebash alpineproc ubuntubare/14.04 ubuntubare ubuntubash/14.04 ubuntubash ubuntuproc/14.04 ubuntuproc"
+    dnames="alpinebare alpinebash ubuntubare/14.04 ubuntubare ubuntubash/14.04 ubuntubash"
     echo "Checking Dockerfile heads ... ..."
     for dname in $dnames; do
         grep FROM $dname/Dockerfile
@@ -15,7 +15,7 @@ fi
 orgname="mubiic"
 basedir=$(pwd)
 tagname=""
-latestlist="edge 15.04"
+latestlist="edge 14.04"
 dockerfile="Dockerfile"
 
 if [ -f "$basedir/localbuild" ]; then

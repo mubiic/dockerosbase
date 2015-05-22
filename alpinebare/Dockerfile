@@ -9,7 +9,7 @@ COPY            etc             /etc
 COPY            usr             /usr
 
 # Update bash and basic utils for future usages
-RUN             NewPackages="sudo lsof iputils iproute2 tar gzip zlib" && chmod 0777 /entry && \
+RUN             NewPackages="sed tar gzip zlib unzip sudo lsof iputils iproute2" && chmod 0777 /entry && \
                 chmod 0644 /etc/apk/repositories && chmod 0755 /usr/bin/apk-cleanup && \
                 apk upgrade --update-cache --available && apk add --update ${NewPackages} && apk-cleanup && \
                 mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && \

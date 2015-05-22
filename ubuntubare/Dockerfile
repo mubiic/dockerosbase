@@ -44,7 +44,7 @@ RUN             dpkg-divert-min --local --rename --add /usr/bin/ischroot && \
                 ln -sf /bin/true /usr/bin/ischroot
 
 # Update existing system and install essential packages
-RUN             NewPackages="tar gzip apt-utils sudo lsof zlib1g-dev ubuntu-keyring inetutils-ping iproute2" && \
+RUN             NewPackages="grep sed tar zlib1g gzip unzip lsb-base apt-utils sudo lsof ubuntu-keyring inetutils-ping iproute2" && \
                 DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && apt-cleanup-min && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 1 Meta Info" \
                 "Package ++: ${NewPackages}" \

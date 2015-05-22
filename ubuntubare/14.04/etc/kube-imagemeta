@@ -6,6 +6,7 @@ DISTRIB_CODENAME=vivid
 DISTRIB_DESCRIPTION="Ubuntu 15.04"
 ## BY docker run --rm -it mubiic/ubuntucore:15.04 cat /etc/lsb-release
 
+adduser
 apt
 base-files
 base-passwd
@@ -18,15 +19,18 @@ diffutils
 dpkg
 e2fsprogs
 findutils
+gpgv
 grep
 gzip
 hostname
 init
 libc-bin
 login
+makedev
 mount
 ncurses-base
 ncurses-bin
+netbase
 perl-base
 sed
 tar

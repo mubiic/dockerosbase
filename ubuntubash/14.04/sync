@@ -1,0 +1,4 @@
+#!/bin/bash
+set -x
+cp -f ../entry .
+cp -rf ../root .
