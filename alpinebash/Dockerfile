@@ -1,8 +1,8 @@
-FROM            mubiic/alpinebare:edge
+FROM            mubiic/alpinebare:3.2
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             BUILDTAG        alpinebash:3.2a/r20150518/sg/A
+ENV             BUILDTAG        alpinebash:3.2/r20150527/sg/A
 
 
 # Add bash environment files like bash_profile
@@ -14,8 +14,8 @@ ENV             LANGUAGE        $LOCALE
 ENV             LC_ALL          $LOCALE
 
 # Update/install bash, sed, curl etc and maybe more [coreutils, findutils to replace builtin busybox-*]
-RUN             NewPackages="bash gawk xz curl ca-certificates tzdata e2fsprogs" && \
-                apk add --update ${NewPackages} && apk-cleanup && chmod 0777 /entry && \
+RUN             NewPackages="bash gawk xz tree wget curl ca-certificates tzdata e2fsprogs" && \
+                apk-install ${NewPackages} && chmod 0755 /entry && \
                 mkdir -p /opt/bin /opt/sbin /opt/shbin && chmod -R 755 /opt/bin /opt/sbin /opt/shbin && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
                 echo $TIMEZONE > /etc/timezone && date && apk-cleanup && \

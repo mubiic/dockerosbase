@@ -4,12 +4,6 @@
 #### Credits: [textlab@github](https://github.com/textlab/glossa/tree/master/script), [just-containers@github](https://github.com/just-containers/base)
 
 #### Considerations and Intentions:
-Choose alpine over debian/ubuntu/centos for its tiny size.
-Choose alpine over busybox/tinycore/... for its apk system maturity.
-Choose ubuntu-debootstrap over ubuntu for its cleanness and smaller footprint.
-Choose ubuntu over alpine for the optimal way to install and config packages.
-Choose ubuntu-debootstrap:15.04 over debian/ubuntu-debootstrap:14.04.2 for newer packages and less building from src[e.g. libsodium, libgit2 etc].
-Choose rhel7/oraclelinux if you're really paranoid about the LTS thing, but come on, it's used as a container not a host, which means it's easy to restart it as soon as it goes mad.
 
 alpinebare: main data volume base image
 alpinebash: main tooling/hub base image
@@ -22,10 +16,10 @@ though there is [a hack for glibc](https://github.com/andyshinn/alpine-pkg-glibc
 #### Images Building Tree:
 
 ```
-    alpine:3.1 + apk mirror conf
-          --> alpinebare:3.1(latest) + timezone, locale, bash profile settings
-                        --> alpinebash:3.1(latest) + s6 init suite overlay
-                                      --> alpineproc:3.1(latest)
+    alpine:3.2 + apk mirror conf
+          --> alpinebare:3.2(latest) + timezone, locale, bash profile settings
+                        --> alpinebash:3.2(latest) + s6 init suite overlay
+                                      --> alpineproc:3.2(latest)
 ```
 
 ```
@@ -36,9 +30,9 @@ though there is [a hack for glibc](https://github.com/andyshinn/alpine-pkg-glibc
 ```
 
 #### Images Sizes:
-alpine:3.1 ~ 5MB, alpinebare:3.1 ~ 11MB, alpinebash:3.1 ~ 19MB, alpineproc:3.1 ~ 33MB;
-ubuntu-debootstrap:14.04.2 ~ 87MB, ubuntucore:14.04 ~ 56MB, ubuntubare:14.04 ~ 60MB, ubuntubash:14.04 ~ 87MB, ubuntuproc:14.04.2 ~ 109MB;
-ubuntu-debootstrap:15.04 ~ 110MB, ubuntucore:15.04  ~ 95MB, ubuntubare:15.04  ~ 98MB, ubuntubash:15.04 ~ 125MB, ubuntuproc:15.04 ~ 130MB;
+alpine:3.2 ~ 5MB, alpinebare:3.2 ~ 10MB, alpinebash:3.2 ~ 18MB;
+ubuntu-debootstrap:14.04.2 ~ 87MB, ubuntucore:14.04 ~ 56MB, ubuntubare:14.04 ~ 60MB, ubuntubash:14.04 ~ 87MB;
+ubuntu-debootstrap:15.04 ~ 110MB, ubuntucore:15.04  ~ 95MB, ubuntubare:15.04  ~ 98MB, ubuntubash:15.04 ~ 125MB;
 
 #### Script Usage:
 Build one:
@@ -56,7 +50,8 @@ Build ubuntucore:
 ```
 
 #### Available Images:
-Release Image Repo is located at:[mubiic/dockerosebase@github](https://github.com/mubiic/dockerosbase)
+Base Image Repo is located at:[mubiic/dockerosebase@github](https://github.com/mubiic/dockerosbase)
+Proc Image Repo is located at:[mubiic/dockerosebase@github](https://github.com/mubiic/dockerprocbase)
 Public Images are avaliable at: [mubiic@dockerhub](https://registry.hub.docker.com/repos/mubiic/)
 
 ### mubiic/alpine*, ubuntu* images usage:

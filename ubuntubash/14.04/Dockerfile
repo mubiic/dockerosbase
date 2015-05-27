@@ -2,20 +2,20 @@ FROM            mubiic/ubuntubare:14.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             TIMEZONE        Asia/Singapore
 ENV             LOCALE          en_US.UTF-8
-ENV             BUILDTAG        ubuntubash:14.04/r20150518/sg/A
+ENV             BUILDTAG        ubuntubash:14.04/r20150527/sg/A
 
 # Add bash profile for interactive terminal
 COPY            entry           /entry
 COPY            root            /root
 
 # Creat additonal binary path and set proper permissions
-RUN             chmod 0777 /entry && mkdir -p /opt/bin /opt/sbin /opt/shbin && \
+RUN             chmod 0755 /entry && mkdir -p /opt/bin /opt/sbin /opt/shbin && \
                 chmod -R 0755 /opt/bin /opt/sbin /opt/shbin
 
 ENV             PATH            /opt/bin:/opt/sbin:/opt/shbin:$PATH
 
 # Update timezone & locale, Install bash, rync and Curl and add HTTPS support to APT
-RUN             NewPackages="gawk xz-utils ca-certificates curl apt-transport-https locales tzdata e2fsprogs" && \
+RUN             NewPackages="gawk xz-utils ca-certificates tree wget curl apt-transport-https locales tzdata e2fsprogs" && \
                 DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo $TIMEZONE > /etc/timezone && \
                 dpkg-reconfigure -f noninteractive tzdata && date && \

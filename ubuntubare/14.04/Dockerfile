@@ -1,6 +1,6 @@
 FROM            mubiic/ubuntucore:14.04
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
-ENV             BUILDTAG        ubuntubare:14.04/r201505018/sg/A
+ENV             BUILDTAG        ubuntubare:14.04/r20150527/sg/A
 
 
 # Add apt repository mirror list, user local bin
@@ -12,7 +12,7 @@ COPY            usr             /usr
 # for apt* and dpkg* in order to avoid issues with locales and interactive interfaces
 # Add support to debonly installation, all *.deb packages in /opt/debonly will be managed by
 # apt-debonly, apt-install and apt-remove, apt-cleanup
-RUN             chmod 0777 /entry && sed -i 's/vivid/trusty/g' /etc/apt/sources.list && \
+RUN             chmod 0755 /entry && sed -i 's/vivid/trusty/g' /etc/apt/sources.list && \
                 sed -i 's/vivid/trusty/g;s/15.04/14.04/g' /etc/kube-imagemeta && \
                 chmod 0755 /usr/bin/apt-install /usr/bin/apt-debonly /usr/bin/apt-remove \
                 /usr/bin/apt-dpkg-wrapper /usr/bin/apt-cleanup && \
@@ -56,18 +56,18 @@ RUN             dpkg-divert-min --local --rename --add /usr/bin/ischroot && \
                 ln -sf /bin/true /usr/bin/ischroot
 
 # Update existing system and install essential packages
-RUN             NewPackages="grep sed tar zlib1g gzip unzip lsb-base apt-utils sudo lsof ubuntu-keyring inetutils-ping iproute2" && \
+RUN             NewPackages="grep sed tar zlib1g libbz2-1.0 gzip unzip dos2unix lsb-base apt-utils sudo lsof ubuntu-keyring inetutils-ping iproute2" && \
                 DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && apt-cleanup-min && \
                 printf "\\n%s \\n%s \\n%s \\n%s \\n" "# Build Layer 1 Meta Info" \
                 "Package ++: ${NewPackages}" \
                 "Maintainer: Howard Mei <howardmei@mubiic.com>" "Build Tag: $BUILDTAG" >> /etc/kube-imagemeta
 
-# Create sudoer groups: sudoer & admin [PASSWD] and creat a www user in www-data group
+# Create sudoer groups: sudoer & admin [PASSWD] and creat a www-data user in www-data group
 RUN             mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && \
                 addgroup admin && addgroup sudoer && \
-                adduser --system --shell /bin/false --gecos 'WWW User in WWW-Data Group' \
-                --ingroup www-data --disabled-password --no-create-home www && \
-                mkdir -p /var/www && touch /var/www/.placeholder && chown -R www:www-data /var/www && \
+                adduser --system --shell /bin/false --gecos 'WWW-Data User in WWW-Data Group' \
+                --ingroup www-data --disabled-password --no-create-home www-data && \
+                mkdir -p /var/www && touch /var/www/.placeholder && chown -R www-data:www-data /var/www && \
                 unset DEBIAN_FRONTEND && env --unset=DEBIAN_FRONTEND
 
 # Set Default User and Wordking Dir
@@ -83,5 +83,5 @@ ENTRYPOINT      ["/entry"]
 CMD             ["cat","/etc/kube-imagemeta"]
 ## Notice: Use ["/entry"] as ENTRYPOINT instead of ["/bin/bash","-ilc"] to avoid arg parsing issue
 ## /bin/bash -ilc "arg1 arg2 ... argn" has its own builtin args parser which demands full quoted args
-## CMD ["cat","/etc/kube-imagemeta"] will cause errors and "cat /etc/kube-imagemeta" will work
+## where CMD ["cat","/etc/kube-imagemeta"] will cause errors and "cat /etc/kube-imagemeta" will work
 ## but it's incompatible with the default docker run convention. The /entry works on both styles.
