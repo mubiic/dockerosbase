@@ -53,8 +53,6 @@ RUN             NewPackages="grep sed tar zlib1g libbz2-1.0 gzip unzip dos2unix 
 # Create sudoer groups: sudoer & admin [PASSWD] and creat a www-data user in www-data group
 RUN             mv -f /etc/sudoers.tpl /etc/sudoers && chmod 0440 /etc/sudoers && \
                 addgroup admin && addgroup sudoer && \
-                adduser --system --shell /bin/false --gecos 'WWW-Data User in WWW-Data Group' \
-                --ingroup www-data --disabled-password --no-create-home www-data && \
                 mkdir -p /var/www && touch /var/www/.placeholder && chown -R www-data:www-data /var/www && \
                 unset DEBIAN_FRONTEND && env --unset=DEBIAN_FRONTEND
 
