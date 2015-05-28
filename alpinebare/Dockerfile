@@ -1,4 +1,4 @@
-FROM            gliderlabs/alpine:3.2
+FROM            alpine:3.2
 MAINTAINER      Howard Mei      <howardmei@mubiic.com>
 ENV             BUILDTAG        alpinebare:3.2/r20150527/sg/A
 

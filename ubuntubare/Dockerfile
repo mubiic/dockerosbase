@@ -21,10 +21,19 @@ RUN             chmod 0755 /entry && chmod 0755 /usr/bin/apt-install /usr/bin/ap
                     chmod 0755 $pkmin;                                   \
                 done
 
-# Temporarily disable dpkg fsync to make building faster
+# Temporarily disable dpkg fsync to make building faster and
+# Prevent documentation from being installed http://askubuntu.com/a/401144/518
 RUN             if [ ! -e /etc/dpkg/dpkg.cfg.d/docker-apt-speedup ]; then           \
                     echo force-unsafe-io > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup; \
-                fi
+                fi && \
+                cd /etc/dpkg/dpkg.cfg.d/ \
+                && echo 'path-exclude /usr/share/doc/*' >> 01_nodoc \
+                && echo 'path-include /usr/share/doc/*/copyright$' >> 01_nodoc \
+                && echo 'path-exclude /usr/share/man/*$' >> 01_nodoc \
+                && echo 'path-exclude /usr/share/groff/*$' >> 01_nodoc \
+                && echo 'path-exclude /usr/share/info/*$' >> 01_nodoc \
+                && echo 'path-exclude /usr/share/lintian/*$' >> 01_nodoc \
+                && echo 'path-exclude /usr/share/linda/*$' >> 01_nodoc
 
 # Prevent initramfs updates from trying to run grub and lilo.
 # https://journal.paul.querna.org/articles/2013/10/15/docker-ubuntu-on-rackspace/

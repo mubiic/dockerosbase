@@ -66,13 +66,6 @@ alias reload=". $HOME/.bash_profile"
 alias memclr='free -mh;sync;echo 3 > /proc/sys/vm/drop_caches;free -mh'
 alias wget='wget -c'
 alias path='echo -e ${PATH//:/\\n}'
-## get top process eating memory
-alias memtop='__memls() { local p="$1"; ps -e -o pid,uname,comm,cmd,pmem,pcpu --sort=-pmem,-pcpu | head -n ${p:=11}; unset -f __memls; }; __memls'
-## get top process eating cpu ##
-alias cputop='__cpuls() { local p="$1"; ps -e -o pid,uname,comm,cmd,pcpu,pmem --sort=-pcpu,-pmem | head -n ${p:=11}; unset -f __cpuls; }; __cpuls'
-alias pstop='__psls() { local p="$1"; watch -n 0.1 "ps -e -o pid,uname,comm,cmd,pcpu,pmem --sort=-pcpu,-pmem | head -n ${p:=11}"; unset -f __psls; }; __psls'
-alias psa='__pslsa() { local p="$1"; ps -e -o pid,uname,comm,pcpu,pmem,etime,cmd --sort=-pcpu,-pmem | head -n ${p:=101}; unset -f __pslsa; }; __pslsa'
-alias psp='__pslsp() { local p="$@"; local ptot="$(ps -e -o pid,uname,comm,pcpu,pmem,etime,cmd --sort=-pcpu,-pmem)";local phead="$(echo "$ptot" | head -1)";local pbody="$(echo "$ptot" | sed '1d' | grep -i ${p:-""} | grep -v grep)";echo "$phead";echo "$pbody";unset -f __pslsp; }; __pslsp'
 alias vex='__vex() { [ $# -eq 1 ] && [ "$1" == "-q" ] && [ -r "bin/activate" ] && deactivate && return 0;[ -r "${!#}/bin/activate" ] && cd "${!#}" && . bin/activate || virtualenv "$@";[ -d "${!#}" ] && cd "${!#}";[ -r "bin/activate" ] && . bin/activate; unset -f __vex; }; __vex'
 
 

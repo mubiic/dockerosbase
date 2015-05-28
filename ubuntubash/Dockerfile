@@ -15,7 +15,7 @@ RUN             chmod 0755 /entry && mkdir -p /opt/bin /opt/sbin /opt/shbin && \
 ENV             PATH            /opt/bin:/opt/sbin:/opt/shbin:$PATH
 
 # Update timezone & locale, Install bash, curl and add HTTPS support to APT
-RUN             NewPackages="gawk xz-utils ca-certificates tree wget curl apt-transport-https locales tzdata e2fsprogs" && \
+RUN             NewPackages="gawk xz-utils bzip2 ca-certificates tree wget curl apt-transport-https locales tzdata e2fsprogs" && \
                 DEBIAN_FRONTEND=noninteractive && apt-get-min update && apt-install-min ${NewPackages} && \
                 cp -f /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo $TIMEZONE > /etc/timezone && \
                 dpkg-reconfigure -f noninteractive tzdata && date && \
